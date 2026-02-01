@@ -147,12 +147,17 @@ func main() {
 	http.HandleFunc("/api/category/", categoryHandler.HandleCategoryByID)
 
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application")
+		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]string{
 			"status":  "OK",
 			"message": "API Running",
 		})
 	})
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 
 	fmt.Println("Server running di port : " + config.Port)
 	err = http.ListenAndServe(":"+config.Port, nil)
