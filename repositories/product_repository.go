@@ -14,14 +14,20 @@ func NewProductRepositories(db *sql.DB) *ProductRepositories {
 	return &ProductRepositories{db: db}
 }
 
-func (repo *ProductRepositories) GetAllProduct() ([]models.Produk, error) {
+func (repo *ProductRepositories) GetAllProduct(nameFilter string) ([]models.Produk, error) {
 	query := `
 		SELECT p.id, p.name, p.price, p.stock, p.category_id, 
 		       c.id, c.name, c.description 
 		FROM products p
 		LEFT JOIN categories c ON p.category_id = c.id`
 
-	rows, err := repo.db.Query(query)
+	args := []interface{}{}
+
+	if nameFilter != "" {
+		query += " WHERE p.name ILIKE $1"
+		args = append(args, "%"+nameFilter+"%")
+	}
+	rows, err := repo.db.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -32,15 +38,6 @@ func (repo *ProductRepositories) GetAllProduct() ([]models.Produk, error) {
 	for rows.Next() {
 		var p models.Produk
 		var c models.Category
-
-		// Use sql.Null types if columns can be null, but for simplicity assuming valid data or handling basic scan.
-		// If category_id is null in DB, this might fail without NullInt definition.
-		// However, let's assume standard scan for now as per Go SQL patterns,
-		// possibly needing pointers or Null types if Left Join returns nulls.
-		// For safety with LEFT JOIN where category might be missing,
-		// strictly speaking, we should use NullString/Int or pointers.
-		// Given the user context, I'll try direct scan. If p.category_id is null, it might error.
-		// But let's proceed with the standard assumption that the user handles schema.
 
 		var categoryID sql.NullInt64
 		var categoryName sql.NullString
