@@ -1,13 +1,12 @@
 package models
 
-type ProductPopularity struct {
-	ProductID int    `json:"product_id"`
-	Name      string `json:"name"`
-	SoldCount int    `json:"sold_count"`
+type ProdukTerlaris struct {
+	Nama       string `json:"nama"`
+	QtyTerjual int    `json:"qty_terjual"`
 }
 
 type SalesSummary struct {
-	TotalRevenue      int                 `json:"total_revenue"`
-	TotalTransaction  int                 `json:"total_transaction"`
-	ProductPopularity []ProductPopularity `json:"product_popularity"`
+	TotalRevenue   int            `json:"total_revenue"`
+	TotalTransaksi int            `json:"total_transaksi"`
+	ProdukTerlaris ProdukTerlaris `json:"produk_terlaris"`
 }
